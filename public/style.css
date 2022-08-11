@@ -1,0 +1,64 @@
+html {
+    font-family: Alegreya, serif;
+}
+
+body {
+    color: #333;
+    background-color: #cecccc;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='24' viewBox='0 0 12 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d0d0d0' fill-opacity='1'%3E%3Cpath d='M2 0h2v12H2V0zm1 20c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM9 8c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-1 4h2v12H8V12z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    padding: 40px;
+
+    font-size: 150%;
+}
+
+a {
+    text-decoration: none;
+}
+
+.site-icon {
+    margin-right: 10px;
+}
+
+.site-icon svg {
+    width: 3rem;
+    height: 3rem;
+    opacity: 0.6;
+    transition: opacity 0.2s ease-in-out;
+}
+
+a:hover svg {
+    opacity: 0.9;
+}
+
+.card {
+    background-color: white;
+    margin: 0 auto;
+    width: 400px;
+    border-radius: 2px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2)
+}
+
+.card h1 {
+    margin: 0;
+}
+
+.card p {
+    margin: 5px 0;
+    color: #333;
+}
+
+.card-content {
+    padding: 20px;
+}
+.card-footer {
+    border-top: 1px solid #eee;
+}
+
+@media screen and (max-width: 479px) {
+    body {
+        padding: 10px;
+    }
+    .card {
+        width: 100%;
+    }
+}
