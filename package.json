@@ -2,13 +2,19 @@
   "name": "nickhowes.co.uk",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "echo No build required"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/halfninja/nickhowes.co.uk.git"
   },
   "author": "Nick Howes",
-  "homepage": "https://github.com/halfninja/nickhowes.co.uk#readme"
+  "homepage": "https://github.com/halfninja/nickhowes.co.uk#readme",
+  "dependencies": {
+    "astro": "^1.0.2",
+    "lit": "^2.2.8"
+  }
 }
