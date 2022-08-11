@@ -1,8 +1,6 @@
 {
   "name": "nickhowes.co.uk",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "echo No build required"
@@ -11,10 +9,6 @@
     "type": "git",
     "url": "git+https://github.com/halfninja/nickhowes.co.uk.git"
   },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/halfninja/nickhowes.co.uk/issues"
-  },
+  "author": "Nick Howes",
   "homepage": "https://github.com/halfninja/nickhowes.co.uk#readme"
 }
