@@ -9,7 +9,7 @@ body {
   color: #333;
   background-color: #cecccc;
   background-image: url("data:image/svg+xml,%3Csvg width='12' height='24' viewBox='0 0 12 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d0d0d0' fill-opacity='1'%3E%3Cpath d='M2 0h2v12H2V0zm1 20c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM9 8c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-1 4h2v12H8V12z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  padding: 40px;
+  padding: 0 10px 10px 10px;
 
   font-size: 150%;
 }
@@ -36,10 +36,4 @@ h1 {
 p {
   margin: var(--p-margin) 0;
   color: #333;
-}
-
-@media screen and (max-width: 479px) {
-  body {
-    padding: 10px;
-  }
 }
