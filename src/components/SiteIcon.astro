@@ -1,18 +1,13 @@
 ---
 export type Props = {
   title: string;
-  svgPath: string;
+  svg: string;
   href: string;
 };
 
-const { title, svgPath, href } = Astro.props as Props;
+const { title, svg, href } = Astro.props as Props;
 ---
-<a class="site-icon" href={href} title={title}>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-    <path
-      d={svgPath} />
-  </svg>
-</a>
+<a class="site-icon" href={href} title={title} set:html={svg}></a>
 <style>
 a {
   text-decoration: none;
