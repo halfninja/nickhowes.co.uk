@@ -1,10 +1,13 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "types": ["@astrojs/image/client"],
     "paths": {
-      "@components/*": [ "src/components/*" ],
-      "@layouts/*": [ "src/layouts/*" ],
-      "@support/*": [ "src/support/*" ],
-    }
+			"@/components/*": ["src/components/*.astro"],
+			"@/layouts/*": ["src/layouts/*.astro"],
+			"@/util": ["src/util.ts"],
+			"@/stores/*": ["src/stores/*"],
+			"@/types": ["src/types.ts"]
+		},
   }
 }

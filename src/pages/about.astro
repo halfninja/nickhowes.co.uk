@@ -1,0 +1,32 @@
+---
+import PageLayout from "@/layouts/Base";
+import { Image } from "@astrojs/image/components";
+
+const meta = {
+	title: "About",
+	description: "It's me, Kathy",
+};
+---
+
+<PageLayout meta={meta}>
+	<div class="space-y-6">
+		<h1 class="title">About me</h1>
+		<p>
+			By day I'm a husband and father. Also by day I am a <strong>Senior Software Engineer</strong>
+      at the University of Warwick, building bespoke web apps and managing a
+      full-stack DevOps architecture.
+    </p>
+      
+    <p>
+      My professional passion is improving the developer
+      experience. I can often be found speeding up build times or investigating
+      new tools to help our team spend less time battling boilerplate and more
+      time doing the things they do best.
+		</p>
+    
+    <p>
+      My hobbies are the stock standard hobby set, which is walking, listening to music, and
+      making 3D things in <a class="cactus-link" href="https://blender.org" target="_blank">Blender</a>.
+    </p>
+	</div>
+</PageLayout>
