@@ -1,19 +1,53 @@
 ---
-// Front Matter
-import BaseLayout from '../layouts/BaseLayout.astro';
-import SiteIcon from '../components/SiteIcon.astro';
-import Card from '../components/Card.astro';
-import * as icons from '../support/icons';
+import PageLayout from "@/layouts/Base";
+import BlogPostPreview from "@/components/BlogPostPreview";
+import SocialList from "@/components/SocialList";
+import { sortMDByDate } from "@/util";
+import type { Post } from "@/types";
+
+const meta = {
+	title: "Nick Howes",
+	description: "Freelance scientist",
+};
+
+const MAX_POSTS = 10;
+const allPosts = await Astro.glob<Post>("./posts/**/*.mdx");
+const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS);
 ---
-<BaseLayout>
-  <Card class="vcard">
-    <h1 class="fn">Nick Howes</h1>
-    <p>Freelance Scientist</p>
-    <Fragment slot="footer">
-        <SiteIcon title="GitHub" svg={icons.github} href="https://github.com/halfninja" />
-        <SiteIcon title="Twitter" svg={icons.twitter} href="https://twitter.com/nickhowes" />  
-        <SiteIcon title="LinkedIn" svg={icons.linkedIn} href="https://www.linkedin.com/in/nickhowes/" />
-        <SiteIcon title="Email" svg={icons.email} href="mailto:nick@nickhowes.co.uk" />
-    </Fragment>
-  </Card>
-</BaseLayout>
+
+<PageLayout meta={meta}>
+	<section>
+		<!-- <h1 class="mb-6 title">Freelance Scientist</h1>
+		<p class="mb-4">
+			
+		</p> -->
+		<SocialList />
+	</section>
+	<section aria-label="Blog post list" class="mt-8">
+		<h2 class="mb-4 text-xl title">Posts</h2>
+		<ul class="space-y-4 sm:space-y-2">
+			{
+				allPostsByDate.map((p) => (
+					<li class="flex flex-wrap items-center gap-x-2 [&_q]:w-full">
+						<BlogPostPreview post={p} as="h2" />
+					</li>
+				))
+			}
+		</ul>
+	</section>
+	<!-- <section class="mt-16">
+		<h2 class="mb-4 text-xl title">Technologies</h2>
+		<ul class="space-y-4 sm:space-y-2">
+			<li>
+				<a
+					href="https://astro.build"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="inline-block cactus-link"
+					>Astro
+				</a>:
+				<p class="inline-block sm:mt-2">Build fast websites, faster.</p>
+			</li>
+		</ul>
+	</section> -->
+</PageLayout>
