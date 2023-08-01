@@ -54,7 +54,7 @@ Going back to our stack trace and looking further up (down?) the stack, we confi
 
 Then I notice this on our pagination widget: 
 
-<Screenshot src={import('./paginator.png')} alt="Screenshot of pagination widget and the tooltip 'Show all 30890 topics'" /> 
+<Screenshot src={import('./paginator.png')} alt="Screenshot of pagination widget and the tooltip 'Show all 30890 topics'" />
 
 This doesn't seem like a very good idea. As much as a user might wish to see all the topics at once, allowing this on an unbounded and potentially very large collection (people don't tend to clean up their forums) does not seem wise. Removing this option should avoid the possibility to load a large amount of data into memory at once. 
 
