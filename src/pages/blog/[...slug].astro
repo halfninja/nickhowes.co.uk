@@ -1,0 +1,56 @@
+---
+import { CollectionEntry, getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Bio from '../../components/Bio.astro';
+import { formatDate } from '@support/date';
+
+export async function getStaticPaths() {
+  const blogEntries = await getCollection('blog');
+  return blogEntries.map(entry => ({
+    params: { slug: entry.slug }, props: { entry },
+  }));
+};
+
+const { entry } = Astro.props;
+const { data, slug } = entry;
+const { title, description, publishDate } = data;
+const permalink = `${Astro.site.href}blog/${slug}`;
+const { Content } = await entry.render();
+---
+
+<BaseLayout title={title} description={description} permalink={permalink} current="blog">
+  <header>
+    <p>{formatDate(publishDate)}</p>
+    <h1>{title}</h1>
+    <hr />
+  </header>
+  <div class="container">
+    <article class="content">
+      <Content />
+    </article>
+    <hr />
+    <Bio />
+  </div>
+</BaseLayout>
+
+<style>
+  header {
+    text-align: center;
+  }
+
+  header h1 {
+    margin-bottom: 0.7em;
+  }
+
+  header p {
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-family: var(--font-family-sans);
+    font-weight: 600;
+  }
+
+  header hr {
+    min-width: 100px;
+    width: 30%;
+  }
+</style>

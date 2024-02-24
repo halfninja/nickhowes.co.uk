@@ -1,0 +1,35 @@
+---
+import { formatDate } from '@support/date';
+import type { CollectionEntry } from 'astro:content';
+
+export type Props = {
+  posts: CollectionEntry<'blog'>[];
+};
+const { posts } = Astro.props;
+---
+
+{posts.map((post, index) => {
+  const href = `/blog/${post.slug}`;
+  return (
+    
+      <div class="post-item">
+        <h3>
+          <a href={href}>{post.data.title}</a>
+        </h3>
+        <p>{post.data.description}</p>
+        <div class="post-item-footer">
+          <span class="post-item-date">— {formatDate(post.data.publishDate)}</span>
+        </div>
+      </div>
+    
+  )
+})}
+
+<style>
+  .post-item {
+    border: 3px solid #333;
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 1rem;
+  }
+</style>

@@ -1,0 +1,55 @@
+---
+export interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+const letters = text.split('');
+let i = -1;
+const lettersWithIndex = letters.map(letter => {
+  if (letter !== ' ') {
+    i += 1;
+  }
+  return {i, letter};
+});
+---
+<span class="rainbow-letters">
+{lettersWithIndex.map(({i, letter}) => 
+  <span class={`rainbow-letter rainbow-letter-${i%7+1}`}>{letter}</span>
+)}
+</span>
+
+<style>
+  .rainbow-letter {
+    --rainbow-lightness: 63%;
+    --rainbow-colour: hsl(calc(256/7*(var(--rainbow-index)-1)), 50%, var(--rainbow-lightness));
+    color: var(--rainbow-colour);
+  }
+  .theme-dark .rainbow-letter {
+    --rainbow-lightness: 83%;
+    --rainbow-colour: hsl(calc(256/7*(var(--rainbow-index)-1)), 100%, 83%);
+  }
+  .rainbow-letter-1 {
+    --rainbow-index: 1;
+  }
+  .rainbow-letter-2 {
+    --rainbow-index: 2;
+  }
+  .rainbow-letter-3 {
+    --rainbow-index: 3;
+  }
+  .rainbow-letter-3 {
+    --rainbow-index: 3;
+  }
+  .rainbow-letter-4 {
+    --rainbow-index: 4;
+  }
+  .rainbow-letter-5 {
+    --rainbow-index: 5;
+  }
+  .rainbow-letter-6 {
+    --rainbow-index: 6;
+  }
+  .rainbow-letter-7 {
+    --rainbow-index: 7;
+  }
+</style>

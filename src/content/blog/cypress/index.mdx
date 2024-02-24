@@ -1,0 +1,40 @@
+---
+title: Solving flappy Cypress tests
+tags: [ cypress, computing ]
+publishDate: 2022-10-23
+description: How to avoid common pitfalls.
+---
+import { Image } from 'astro:assets';
+
+<Image src={import('./cyprus.jpg')} alt="Cyprus" />
+
+[Cypress](https://cypress.io) is generally great at avoiding flappy (or flaky) tests. 
+Despite that, you've probably hit upon a test that fails _sometimes_. 
+Cypress does its very best to work around things that take time to settle but it is 
+still possible to assume that some change has happened without actually asserting that it has, 
+which can lead to race conditions between the spec and whatever is happening in your document.
+
+There is already a good official page on [Debugging flake](https://docs.cypress.io/guides/guides/debugging#Debugging-flake) -
+this post just fills in a few more specific examples.
+
+Unfortunately I don't have any beautiful animated screen grabs to accompany these.
+
+## Page with async render.
+
+We had a grid view that would asynchronously fetch and render, once on first load and then again whenever the data changed.
+
+The test was trying to wait for a data change by intercepting the network request and waiting for it. However, it didn't consider the initial request on page load. Most of the time it would intercept after this request and succeed, but sometimes it would intercept this initial request and start doing subsequent steps too soon.
+
+The fix was to first wait for the content to render before moving on to the next step.
+
+## Async form submission with page reload
+
+We had a dialog that submitted a `fetch` request, and reloaded the page on success.
+
+The spec was sporadically hitting the dreaded "Detached DOM" error.
+
+It was submitting the dialog, then trying to click a button with the reloaded page, but without actually waiting for the page to reload.
+
+Result: Cypress finds the button, then the page reloads, then it tries to click the (now detached) button.
+
+The fix is to wait for reload first. If there isn't anything visible you can wait for, a common workaround is to manually set a variable then assert that the variable is unset.

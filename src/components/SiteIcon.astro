@@ -1,0 +1,37 @@
+---
+export type Props = {
+  title: string;
+  svg: string;
+  href: string;
+};
+
+const { title, svg, href } = Astro.props as Props;
+const updatedSvg = svg.replace('<svg ','<svg fill="currentColor" ');
+---
+<a class="site-icon" href={href} title={title} set:html={updatedSvg}></a>
+<style>
+a {
+  text-decoration: none;
+  display: inline-block;
+  color: var(--text-main);
+}
+
+.site-icon {
+  margin-right: 10px;
+}
+
+.site-icon {
+  width: 3rem;
+  height: 3rem;
+  opacity: 0.6;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.site-icon svg path {
+  fill: var(--text-main);
+}
+
+a:hover .site-icon {
+  opacity: 0.9;
+}
+</style>

@@ -1,0 +1,124 @@
+---
+import { getCollection, getEntryBySlug } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import ListPosts from '@components/ListPosts.astro';
+import RainbowText from '@components/RainbowText.astro';
+import SiteIcon from '@components/SiteIcon.astro';
+import * as icons from '../support/icons';
+
+const title = 'Nick Howes\' home page';
+const description = 'The perfect starter for your perfect blog.';
+const permalink = Astro.site?.href ?? '';
+
+let allPosts = await getCollection('blog',  ({ data }) => data.draft !== true);
+allPosts = allPosts.sort((a, b) => new Date(b.data.publishDate).valueOf() - new Date(a.data.publishDate).valueOf());
+
+const heading = 'Nick Howes';
+---
+
+<BaseLayout title={title} description={description} permalink={permalink} current="home">
+  <div class="home-container">
+    <div class="home-copy">
+      <!-- <h1><RainbowText text={heading} /></h1> -->
+      <h1>{heading}</h1>
+      <h2>Freelance Scientist</h2>
+      <div>
+        <SiteIcon title="GitHub" svg={icons.github} href="https://github.com/halfninja" />
+        <SiteIcon title="Twitter" svg={icons.twitter} href="https://twitter.com/nickhowes" />  
+        <SiteIcon title="LinkedIn" svg={icons.linkedIn} href="https://www.linkedin.com/in/nickhowes/" />
+        <SiteIcon title="Email" svg={icons.email} href="mailto:nick@nickhowes.co.uk" />
+      </div>
+    </div>
+
+    <div class="hero-image-container">
+      <!-- <picture>
+        <source srcset="/assets/home-illustration.webp" media="(min-width: 600px)">
+        <img class="hero-image" alt="Illustration of person reading a book" src="/assets/home-illustration-small.webp" width="550" height="466">
+      </picture>
+      <p class="caption">
+        Illustration by
+        <a href="https://icons8.com/illustrations/author/5c07e68d82bcbc0092519bb6" target="_blank" rel="noopener">Icons 8</a>
+        from
+        <a href="https://icons8.com/illustrations" target="_blank" rel="noopener">Ouch!</a>
+      </p> -->
+    </div>
+  </div>
+  <div class="home-blog-list">
+    <h2>Blog posts</h2>
+    <ListPosts posts={allPosts} />
+  </div>
+</BaseLayout>
+
+<style>
+  .home-container {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    margin: 2em 0;
+    min-height: 30dvh;
+  }
+
+  .home-copy {
+    flex: 1;
+    padding: 0 1em;
+  }
+
+  .home-copy h1 {
+    font-weight: 700;
+    margin-bottom: 0;
+    line-height: 1.3;
+  }
+
+  .home-copy h2 {
+    margin: 0;
+  }
+
+  .home-copy p {
+    font-size: 1.4em;
+  }
+
+  .hero-image-container {
+    margin: 0 1em;
+    text-align: center;
+  }
+
+  .hero-image-container picture {
+    display: block;
+    min-height: 250px;
+  }
+
+  .caption {
+    font-size: .8em;
+    font-style: italic;
+    text-align: left;
+  }
+
+  .hero-image {
+    width: 100%;
+    max-width: 550px;
+    margin-bottom: 1em;
+  }
+
+  @media (max-width: 1200px) {
+    p {
+      font-size: 1.2em;
+    }
+
+    .hero-image {
+      max-width: 400px;
+    }
+  }
+
+  @media (max-width: 800px) {
+    .home-container {
+      flex-direction: column;
+    }
+
+    .home-copy {
+      flex: 0;
+      padding-bottom: 2em;
+      text-align: center;
+    }
+  }
+</style>
