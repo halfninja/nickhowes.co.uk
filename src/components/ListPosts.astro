@@ -9,16 +9,20 @@ const { posts } = Astro.props;
 ---
 
 <div class="post-items">
-{posts.map((post, index) => {
+{posts.map((post) => {
   const href = `/blog/${post.slug}`;
+  const { data: { title, description } } = post;
   return (
     
       <div class="post-item">
         <h3>
-          <a href={href}>{post.data.title}</a>
+          <a href={href}>{title}</a>
         </h3>
-        <p>{post.data.description}</p>
+        { description && <p>{description}</p> }
         <div class="post-item-footer">
+          {post.data.tags.map((tag) =>
+            <span class="tag-chip">{tag}</span>
+          )}
           <span class="post-item-date">— {formatDate(post.data.publishDate)}</span>
         </div>
       </div>
@@ -35,9 +39,16 @@ const { posts } = Astro.props;
   }
 
   .post-item {
-    border: 3px solid #333;
+    background-color: var(--background-accent);
     margin: 1rem 0;
     padding: 1rem;
     border-radius: 1rem;
+  }
+
+  .tag-chip {
+    padding: 3px 6px;
+    margin-right: 3px;
+    border-radius: 5px;
+    background-color: var(--background-body);
   }
 </style>

@@ -2,6 +2,8 @@
 import '../styles/fonts.css'
 import '../styles/global.css'
 
+import { urlTo } from '@support/urls';
+
 export interface Props {
   title: string;
   description: string;
@@ -9,7 +11,7 @@ export interface Props {
 }
 
 const { title, description, permalink } = Astro.props;
-const socialUrl = Astro.site.href + 'assets/social.png';
+const socialUrl = urlTo(Astro, 'assets/social.png');
 ---
 
 <!-- Global Metadata -->

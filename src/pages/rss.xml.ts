@@ -1,12 +1,13 @@
 import rss from '@astrojs/rss';
+import type { APIContext } from 'astro';
 import { getCollection } from 'astro:content';
 
-export async function GET(context) {
+export async function GET(context: APIContext) {
   const posts = await getCollection("blog", ({data}) => data.draft !== true);
   return rss({
     title: 'Nick Howes',
     description: 'Blog posts',
-    site: context.site,
+    site: context.site as URL,
     items: posts.map((post) => ({
       title: post.data.title,
       pubDate: post.data.publishDate,

@@ -1,14 +1,15 @@
 ---
-import { getCollection } from 'astro:content';
+import * as blog from '@support/blog';
 import ListPosts from '../../components/ListPosts.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { urlTo } from '@support/urls';
 
 const title = 'Blog';
 const description = 'Latest articles.';
-const permalink = `${Astro.site.href}blog`;
+const permalink = urlTo(Astro, 'blog');
 
-let allPosts = await getCollection('blog', ({ data }) => data.draft !== true);
-allPosts = allPosts.sort((a, b) => new Date(b.data.publishDate).valueOf() - new Date(a.data.publishDate).valueOf());
+let allPosts = await blog.getLiveBlogEntries();
+blog.sort(allPosts);
 ---
 
 <BaseLayout title={title} description={description} permalink={permalink} current="blog">

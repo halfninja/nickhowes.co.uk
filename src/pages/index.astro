@@ -1,8 +1,7 @@
 ---
-import { getCollection, getEntryBySlug } from 'astro:content';
+import * as blog from '@support/blog'
 import BaseLayout from '@layouts/BaseLayout.astro';
 import ListPosts from '@components/ListPosts.astro';
-import RainbowText from '@components/RainbowText.astro';
 import SiteIcon from '@components/SiteIcon.astro';
 import * as icons from '../support/icons';
 
@@ -10,8 +9,8 @@ const title = 'Nick Howes\' home page';
 const description = 'The perfect starter for your perfect blog.';
 const permalink = Astro.site?.href ?? '';
 
-let allPosts = await getCollection('blog',  ({ data }) => data.draft !== true);
-allPosts = allPosts.sort((a, b) => new Date(b.data.publishDate).valueOf() - new Date(a.data.publishDate).valueOf());
+let allPosts = await blog.getLiveBlogEntries();
+blog.sort(allPosts);
 
 const heading = 'Nick Howes';
 ---

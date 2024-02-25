@@ -1,5 +1,4 @@
 ---
-import Logo from './Logo.astro'
 import Nav from './Nav.astro'
 
 const { current = '' } = Astro.props;
@@ -13,6 +12,15 @@ const homePage = current === 'home';
     max-width: 1400px;
     padding: 2em;
     width: 100%;
+  }
+
+  @media (max-width: 640px)  {
+    header {
+      flex-direction: column-reverse;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+    }
   }
 
   h1 {

@@ -1,20 +1,15 @@
 ---
-import { CollectionEntry, getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Bio from '../../components/Bio.astro';
 import { formatDate } from '@support/date';
+import { urlTo } from '@support/urls';
 
-export async function getStaticPaths() {
-  const blogEntries = await getCollection('blog');
-  return blogEntries.map(entry => ({
-    params: { slug: entry.slug }, props: { entry },
-  }));
-};
+export { getStaticPaths } from '@support/blog';
 
 const { entry } = Astro.props;
 const { data, slug } = entry;
 const { title, description, publishDate } = data;
-const permalink = `${Astro.site.href}blog/${slug}`;
+const permalink = urlTo(Astro, `blog/${slug}`);
 const { Content } = await entry.render();
 ---
 
