@@ -8,6 +8,7 @@ export type Props = {
 const { posts } = Astro.props;
 ---
 
+<div class="post-items">
 {posts.map((post, index) => {
   const href = `/blog/${post.slug}`;
   return (
@@ -24,8 +25,15 @@ const { posts } = Astro.props;
     
   )
 })}
+</div>
 
 <style>
+  .post-items {
+    /* display: grid;
+    gap: 1rem;  
+    grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr)); */
+  }
+
   .post-item {
     border: 3px solid #333;
     margin: 1rem 0;

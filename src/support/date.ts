@@ -1,4 +1,6 @@
 
-export function formatDate(d: Date) {
-  return 'shazam';
+const niceDate = new Intl.DateTimeFormat('en-gb', { dateStyle: 'long' });
+
+export function formatDate(date: Date) {
+  return niceDate.format(date);
 }

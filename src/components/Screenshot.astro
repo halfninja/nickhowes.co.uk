@@ -5,10 +5,20 @@ import { Image } from 'astro:assets';
 export interface Props {
   src: string | Promise<ImageMetadata>;
   alt: string;
+  caption?: string;
 };
 
-const { src, alt } = Astro.props as Props;
+const { src, alt, caption } = Astro.props as Props;
 //const image = await src;
 ---
 
+<figure>
 <Image {...Astro.props} />
+{ caption && <figcaption>{caption}</figcaption> }
+</figure>
+
+<style>
+  img {
+    border-radius: 10px;
+  }
+</style>

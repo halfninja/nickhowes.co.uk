@@ -5,11 +5,11 @@ tags: [ computing, hibernate ]
 ---
 import Screenshot from '@components/Screenshot.astro';
 
-Occasionally our JVM (Java, Scala, or Kotlin) apps experience problems where they either completely run out of memory and are forced to shut down, or they start to repeatedly Full GC which reduces throughput. Thankfully the JVM has good tools for looking at what it is doing at a point in time, and strangely I quite enjoy post mortem detective work.
+Occasionally our JVM (Java, Scala, or Kotlin) apps experience problems where they either completely run out of memory and are forced to shut down, or they start to do repeated Full <abbr title="Garbage Collection">GC</abbr> which reduces throughput. Thankfully the JVM has good tools for looking at what it is doing at a point in time, and strangely I quite enjoy post mortem detective work.
 
 I've done a good number of these in the past and every case is slightly different, but there are a few common techniques that you can build up over time so it's best if I narrate through this as though you are debugging along with me.
 
-In this case we have a situation where a single web application server would run out of memory, with no regular pattern. This often points to the trigger being a particular request that is very memory intensive.
+In this case we have a situation where a single web application server would run out of memory, with no regular pattern. This often points to the trigger being a particular request that is very memory intensive. Fortunately we have a cluster of application servers so things keep ticking along while this one restarts.
 
 ## Getting the heap dump
 
@@ -19,31 +19,33 @@ We pass this flag to our Tomcat servers so that the JVM automatically generates 
 -XX:+HeapDumpOnOutOfMemoryError
 ````
 
-If a process is still running, but very busy with Full GC, then we would trigger our own heap dump with `jmap`.
+If a process is still running, but very busy with Full GC, then we would trigger our own heap dump with `jmap` (or `jcmd` in newer JDKs).
 
 I copy that file locally for analysis.
 
 ## Analysing
 
-We use [Eclipse Memory Analyzer](https://www.eclipse.org/mat/) to open heap dumps. Here's what it says when we open this heap dump.
+I use [Eclipse Memory Analyzer](https://www.eclipse.org/mat/) to open heap dumps. Here's what it says when we open this one.
 
 <Screenshot src={import('./mat-summary.png')} alt="Screenshot of memory analyzer summary" />
 
-What a pile of garbage. We already suspect a particular expensive request, and in a Servlet container these are generally thread-level so let's look at the threads. When I first started using MAT this feature didn't exist (it wasn't until Java 6 that the information was included in the dump, and later still that MAT implemented the feature) but we can now view each thread's stack and from there, any references to/from that Thread. It's indispensable for a busy server where a lot of unconnected work might be going on. 
+What a pile of garbage. Often this initial screen doesn't tell you a lot. We already suspect a particular expensive request, and in a Servlet container these are generally thread-level so let's look at the threads. When I first started using MAT this feature didn't exist (it wasn't until Java 6 that the information was included in the dump, and later still that MAT implemented the feature) but we can now view each thread's stack and from there, any references to/from that Thread. It's indispensable for a busy server where a lot of unconnected work might be going on. 
 
-<Screenshot src={import('./mat-threads-button.png')} alt="Screenshot of the button for viewing the thread stacks" />
+<Screenshot src={import('./mat-threads-button.png')} alt="Screenshot of the button for viewing the thread stacks" caption="Here's the button for viewing the thread stacks." />
+
+<Screenshot src={import('./mat-threads.png')} alt="Screenshot listing a number of Tomcat threads, with the top thread using more memory than the others" />
 
 A lot of threads, mostly the same, but look at that Retained Heap on the top one. It's holding onto a lot of something. Let's see what it was up to!  
 
 Opening it up, the stack trace is a lot of Postgres and Hibernate stuff, which makes sense as the database is where all the data is, and data lives in memory. 
 
-<Screenshot src={import('./mat-threads.png')} alt="Screenshot listing a number of Tomcat threads, with the top thread using more memory than the others" />
+<Screenshot src={import('./mat-thread-zoom.png')} alt="Threads detail" />
 
 This is the part of the stack where our code is happening. It's getting a count of posts for a particular forum topic. As a single number can't be taking up a lot of memory in the application, we have to conclude that it isn't the current action consuming the memory.
 
 The request will have done other work that may have pulled objects into its grasp, and a Hibernate app is very good at doing this thanks to the Session which keeps references to every object loaded, unless evicted or cleared. Let's look at outgoing references of the thread to see what is holding on to data. (We can also try the Dominator view which can give better results.) 
 
-<Screenshot src={import('./mat-strings.png')} alt="Screenshot showing a large number of text strings containing what is clearly spam" />
+<Screenshot src={import('./mat-strings.png')} alt="Screenshot showing a large number of text strings containing what is clearly spam" caption="ONLINE LOVE PROBLEM indeed." />
  
 Ah. We have a lot of String objects here that do not look welcome. The Hibernate persistence context manages the data cached for a Hibernate session, holding on to entities to be re-used when they are referenced elsewhere. As this is a request for a forum it seems likely that the String data related to a large amount of spam. We need to find out where it is, and why we end up loading a lot of it. 
 
@@ -51,7 +53,7 @@ Looking at the database I quite quickly find large numbers of forum posts contai
 
 Going back to our stack trace and looking further up (down?) the stack, we confirm that it is inside the controller responsible for rendering a view of a forum.
 
-Then I notice this on our pagination widget: 
+This leads me to take a closer look at our pagination widget: 
 
 <Screenshot src={import('./paginator.png')} alt="Screenshot of pagination widget and the tooltip 'Show all 30890 topics'" /> 
 

@@ -23,7 +23,7 @@
 body {
   margin: 0;
   font-family: var(--font-family-serif);
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.6;
   background-color: var(--background-body);
   color: var(--text-main);
@@ -256,7 +256,7 @@ input[name='theme-toggle'] {
 
 @media (max-width: 480px) {
   body {
-    font-size: 14px;
+    font-size: 12px;
   }
 
   p,
