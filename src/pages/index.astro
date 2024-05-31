@@ -5,8 +5,8 @@ import ListPosts from '@components/ListPosts.astro';
 import SiteIcon from '@components/SiteIcon.astro';
 import * as icons from '../support/icons';
 
-const title = 'Nick Howes\' home page';
-const description = 'The perfect starter for your perfect blog.';
+const title = 'Nick Howes';
+const description = 'Software Engineer focused on DevOps, automation and development team productivity.';
 const permalink = Astro.site?.href ?? '';
 
 let allPosts = await blog.getLiveBlogEntries();
@@ -20,7 +20,7 @@ const heading = 'Nick Howes';
     <div class="home-copy">
       <!-- <h1><RainbowText text={heading} /></h1> -->
       <h1>{heading}</h1>
-      <h2>Freelance Scientist</h2>
+      <h2>{description}</h2>
       <div>
         <SiteIcon title="GitHub" svg={icons.github} href="https://github.com/halfninja" />
         <SiteIcon title="Twitter" svg={icons.twitter} href="https://twitter.com/nickhowes" />  
@@ -70,11 +70,8 @@ const heading = 'Nick Howes';
   }
 
   .home-copy h2 {
-    margin: 0;
-  }
-
-  .home-copy p {
-    font-size: 1.4em;
+    margin: 0 0 0.5em 0;
+    max-width: 20em;
   }
 
   .hero-image-container {

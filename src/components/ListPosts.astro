@@ -18,11 +18,13 @@ const { posts } = Astro.props;
         <h3>
           <a href={href}>{title}</a>
         </h3>
-        { description && <p>{description}</p> }
+        { description && <div class="post-description">{description}</div> }
         <div class="post-item-footer">
-          {post.data.tags.map((tag) =>
-            <span class="tag-chip">{tag}</span>
-          )}
+          {/* Leave tags out until there is a tag index */}
+          {/* {post.data.tags.map((tag) =>
+            // Space to allow wrapping
+            [<span class="tag-chip">{tag}</span>, ' ']
+          )} */}
           <span class="post-item-date">— {formatDate(post.data.publishDate)}</span>
         </div>
       </div>
@@ -43,6 +45,10 @@ const { posts } = Astro.props;
     margin: 1rem 0;
     padding: 1rem;
     border-radius: 1rem;
+  }
+
+  .post-item-date {
+    white-space: nowrap;
   }
 
   .tag-chip {

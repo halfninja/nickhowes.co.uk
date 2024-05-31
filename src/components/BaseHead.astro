@@ -1,6 +1,6 @@
 ---
-import '../styles/fonts.css'
-import '../styles/global.css'
+import '../styles/fonts.scss'
+import '../styles/global.scss'
 
 import { urlTo } from '@support/urls';
 
@@ -38,6 +38,8 @@ const socialUrl = urlTo(Astro, 'assets/social.png');
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={socialUrl} />
+
+<link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml" />
 
 <!-- This is intentionally inlined to avoid FOUC -->
 <script>

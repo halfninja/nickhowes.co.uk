@@ -1,17 +1,25 @@
-<script>
-  const rootEl = typeof document !== 'undefined' ? document.documentElement : null;
-  const themes = ['light', 'dark'];
-  let theme = ''
+<script lang="ts">
+  const KEY = 'theme';
+  const rootEl: HTMLElement | null = typeof document !== 'undefined' ? document.documentElement : null;
+  const themes = ['light', 'dark'] as const;
+  type Theme = typeof themes[number];
+  let theme: Theme | null;
 
-  if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-    theme = localStorage.getItem('theme');
+
+  if (typeof localStorage !== 'undefined' && localStorage.getItem(KEY)) {
+    theme = localStorage.getItem(KEY) as Theme;
   } else if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     theme = 'dark';
   }
 
-  function handleChange(event) {
-    theme = event.target.value;
-    localStorage.setItem('theme', theme);
+  function handleChange(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    theme = target?.value as Theme | null;
+    if (theme) {
+      localStorage.setItem(KEY, theme);
+    } else {
+      localStorage.removeItem(KEY);
+    }
   }
 
   $: if (rootEl && theme === 'light') {

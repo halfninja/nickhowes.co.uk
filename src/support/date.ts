@@ -1,6 +1,4 @@
 
 const niceDate = new Intl.DateTimeFormat('en-gb', { dateStyle: 'long' });
 
-export function formatDate(date: Date) {
-  return niceDate.format(date);
-}
+export const formatDate = (date: Date) => niceDate.format(date);
