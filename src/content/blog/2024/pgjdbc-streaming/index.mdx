@@ -1,0 +1,83 @@
+---
+title: Streaming results from Postgres with JDBC
+tags: [ jdbc, postgres, computing ]
+publishDate: 2024-07-12
+description: Or accidentally loading everything into memory?
+---
+
+In a JVM app connecting to a PostgreSQL database you'll most likely be using the official `pgjdbc` driver. The default behaviour when executing queries is to return the whole result set in memory. If you want to process a large number of items without loading them all into memory, you have to obey a few [documented rules][cursor-rules]:
+
+* Be on a supported combination of client and server
+* Set a fetchSize
+* Have an active transaction (i.e. autoCommit=false)
+* Set scroll mode to "forward only"
+
+If a request matches all the rules, then a batch of rows is returned along with a cursor/portal. This is all fine in theory. In practice there are a couple of issues: there's no way to verify that the results you've received are being batched, and if for some reason you don't fulfil all the requirements, it silently falls back to loading *the whole result set into memory*. If you'd been hoping to stream those million results with constant memory usage, a minor change to your code could suddenly cause your JVM's heap to explode.
+
+To mitigate this I've implemented a function that will check if a ResultSet is batching with a cursor, using reflection. It's probably not best for use in production but I've made use of it in automated tests to verify that specific operations are indeed streaming (using [Testcontainers][testcontainers-pg] to provide the Postgres instance)
+
+```kotlin
+import org.hibernate.ScrollableResults
+import org.hibernate.internal.AbstractScrollableResults
+import java.sql.ResultSet
+
+object ResultSetInspector {
+    private val resultSetField = AbstractScrollableResults::class.java.getPrivateField("resultSet")
+
+    private fun Class<*>.getPrivateField(name: String): java.lang.reflect.Field =
+        getDeclaredField(name).apply { isAccessible = true }
+
+    /**
+     * Returns the number of rows returned in memory, or -1 if
+     * the result has a cursor.
+     * Used to determine whether a query is using a cursor.
+     * This is useful for debugging, but should not be used in production
+     * because reflection can be slow.
+     */
+    fun getNonCursorRowCount(scrollable: ScrollableResults): Int {
+        val rs = resultSetField.get(scrollable) as ResultSet
+        // These fields are specific to PgResultSet, but we can't reference that class directly
+        val pgResultSetClass = rs.javaClass
+        val rowsField = pgResultSetClass.getPrivateField("rows")
+        val cursorField = pgResultSetClass.getPrivateField("cursor")
+        val rows = rowsField.get(rs) as List<*>
+        val cursor = cursorField.get(rs) 
+        return if (cursor == null) rows.size else -1
+    }
+}
+```
+
+Hopefully in future pgjdbc and/or the JDBC API can provide a fail-fast mechanism, as often an exception is preferable to a slow and painful OutOfMemoryError.
+
+The above code can be run at: https://github.com/halfninja/pgjdbc-streaming-article
+
+## Hibernate strikes again
+
+I went through all this last year and made sure any scrolling operations were correctly setting a fetch size. More recently we had an issue with an operation that we thought should be streaming, but wasn't. It looked a bit like this:
+
+```kotlin
+fun streamReadOnlyItems(root: Item): ScrollableResults {
+    // Create a dedicated read-only session just to contain the scrollable results
+    val session = sessionFactory.openSession()
+    session.isDefaultReadOnly = true
+    val criteria = ...
+    criteria.setFetchSize(CURSOR_FETCH_SIZE)
+    criteria.setReadOnly(true)
+    val scrollableResults = criteria.scroll(ScrollMode.FORWARD_ONLY)
+    // Wrapper to clear the session every N rows, to avoid buildup of Hibernate cache
+    return ClearingScrollableResults(session, scrollableResults)
+}
+```
+
+While it looks like it's doing everything it should, and it's called within a `@Transactional` scope, it wasn't streaming. The problem was the new Session we create, which is a new connection and initially non-transactional. After reproducing in a test, the fix was simply to call:
+
+```kotlin
+    session.transaction.begin()
+```
+
+In this case we also mark the transaction as rollback-only, since it's a read-only transaction for building reports so we don't want to commit anything. If you're aiming to commit work along the way, you will need to handle that and rollback conditions.
+
+Our team lead, who comes from a background of programming 3G telephony hardware, observed all this with an air of curiosity. Why do web applications allow things to load way too much into memory? It's a reasonable question; mobile networking hardware processes large amounts of traffic, but by design it's always streamed through fixed buffers, so capacity is very predictable and these problems don't arise. Web applications tend to trade this for convenience and two similar requests can make hugely different memory demands.
+
+[cursor-rules]: https://jdbc.postgresql.org/documentation/query/#getting-results-based-on-a-cursor
+[testcontainers-pg]: https://java.testcontainers.org/modules/databases/postgres/
