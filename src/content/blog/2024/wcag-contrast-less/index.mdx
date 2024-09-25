@@ -4,6 +4,8 @@ tags: [ accessibility, wcag, less ]
 publishDate: 2024-09-25
 description: Contrasting text against backgrounds
 ---
+import { Image } from 'astro:assets';
+import Screenshot from '@components/Screenshot.astro';
 
 Our in-house developed CMS allows a site to be styled with a base colour, which we use to derive other colours and build a theme. We also check these colours for contrast according to WCAG 2.1 - specifically AA contrast.
 
@@ -60,6 +62,10 @@ Finally we have what I have called `ultra-contrast` which will return both a for
 I won't include that function because it's a pyramid of nested if() functions, but rest assured that it is very delightful to look at.
 
 The last thing I needed to do was to rationalise how we define colours in the theme. When it was initially written there wasn't as much consideration for colour contrast and so some colours were hardcoded to black or white, and others made assumptions about the colours being sufficiently contrasting against a white background. Instead I defined a fixed set of colour pairs, each of which are known to contrast against each other correctly, and then updated other areas to only reference those variables.
+
+<Screenshot src={import('./colours-before.png')} alt="Non-validating colour scheme before." caption="Non-validating colour scheme before." />
+
+<Screenshot src={import('./colours-after.png')} alt="Validating colour scheme after." caption="Validating colour scheme after. Ultra contrast in action on the secondary navigation level for Dark Ruby." />
 
 Now all our [brand colour themes][brand-testcard] pass Lighthouse accessibility testing. The next step is going to be re-implementing our themes with CSS Variables, to reduce the payload and to allow them to be reused in Web Components without the theme needing to style them specifically.
 
